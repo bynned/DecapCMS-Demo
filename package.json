@@ -1,0 +1,20 @@
+{
+  "name": "decapcmspoc",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cms": "npx decap-server"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "decap-cms-app": "^3.6.2",
+    "marked": "^15.0.11",
+    "slate-hyperscript": "^0.100.0"
+  }
+}
