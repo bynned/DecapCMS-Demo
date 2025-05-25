@@ -5,23 +5,13 @@ backend:
 
 local_backend: true
 
-
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
 collections:
-  - name: "posts_en"
-    label: "Posts (English)"
-    folder: "src/posts/en"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Body", name: "body", widget: "markdown" }
-
-  - name: "posts_fi"
-    label: "Posts (Finnish)"
-    folder: "src/posts/fi"
+  - name: "posts"
+    label: "Posts"
+    folder: "src/posts"
     create: true
     slug: "{{slug}}"
     fields:

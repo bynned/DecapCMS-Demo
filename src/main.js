@@ -1,50 +1,41 @@
 import './style.css'
 import { marked } from 'marked'
 
-document.addEventListener('DOMContentLoaded', () => {
-  const posts_en = import.meta.glob('./posts/en/*.md', { as: 'raw' })
-  const posts_fi = import.meta.glob('./posts/fi/*.md', { as: 'raw' })
+// Dynamically import all markdown files in the ./posts directory
+// `as: 'raw'` tells Vite to import the file content as a plain string (not a module)
+const postModules = import.meta.glob('./posts/*.md', { as: 'raw' })
 
-  const postsByLang = {
-    en: posts_en,
-    fi: posts_fi,
-  }
+// Main function to load all markdown posts and display them
+async function loadAndRenderPosts() {
+  // Create a container where posts will be rendered
+  const content = document.createElement('div')
+  content.id = 'content'
 
-  let currentLang = 'en'
+  // Load all posts in parallel, convert markdown to HTML using `marked`
+  const posts = await Promise.all(
+    Object.values(postModules).map(loader =>
+      loader().then(marked) // Load each post, then parse markdown to HTML
+    )
+  )
 
+  // For each post's HTML, create a <div> and append it to the container
+  posts.forEach(html => {
+    const post = document.createElement('div')
+    post.className = 'post' // Add a class for optional styling
+    post.innerHTML = html   // Inject parsed HTML content
+    content.appendChild(post)
+  })
+
+  // Set the initial HTML structure of the page
   document.querySelector('#app').innerHTML = `
     <div>
       <h1>Blog Posts</h1>
-      <label for="lang">Language:</label>
-      <select id="lang">
-        <option value="en">English</option>
-        <option value="fi">Finnish</option>
-      </select>
-      <div id="content"></div>
     </div>
   `
 
-  document.querySelector('#lang').addEventListener('change', (e) => {
-    currentLang = e.target.value
-    loadAllContent()
-  })
+  // Append the content (all posts) under the #app container
+  document.querySelector('#app').appendChild(content)
+}
 
-  async function loadAllContent() {
-    const contentContainer = document.querySelector('#content')
-    contentContainer.innerHTML = ''
-
-    const posts = postsByLang[currentLang]
-
-    for (const path in posts) {
-      const rawMarkdown = await posts[path]()
-      const html = marked(rawMarkdown)
-
-      const postDiv = document.createElement('div')
-      postDiv.classList.add('post')
-      postDiv.innerHTML = html
-      contentContainer.appendChild(postDiv)
-    }
-  }
-
-  loadAllContent()
-})
+// Kick off the loading and rendering of posts
+loadAndRenderPosts()
